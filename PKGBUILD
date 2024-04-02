@@ -1,42 +1,61 @@
-# Maintainer: Ivan Gabaldon <aur[at]inetol[dot]net>
+# Maintainer: Ivan Gabaldon <aur[at]inetol.net>
 
 pkgname=mcreator-eap
-_pkgname=mcreator
-pkgver=2023.3.b26610
-_pkgvermajor=2023.3
-_pkgverbuild=26610
+_pkgvermajor=2024.1
+_pkgverbuild=14712
+pkgver=$_pkgvermajor.$_pkgverbuild
 pkgrel=1
 pkgdesc='Make Minecraft Java Edition mods, Bedrock Edition Add-Ons, and data packs using visual graphical programming or integrated IDE (EAP release)'
 arch=('x86_64')
 url='https://mcreator.net'
-license=('custom')
-conflicts=("$_pkgname")
-depends=("java-runtime=17" "jdk17-openjdk")
-noextract=("$_pkgname-$pkgver.tar.gz")
-source=("$_pkgname-$pkgver.tar.gz::https://github.com/$_pkgname/$_pkgname/releases/download/$_pkgvermajor.$_pkgverbuild/$_pkgname.EAP.$_pkgvermajor$_pkgverbuild.Linux.64bit.tar.gz"
-        "$_pkgname.desktop")
-b2sums=('04b7a38e54e8b423bb35a5ba3292d512a165cfe75ca2646ad62b4d84b59e1e4ab21761e756a3f18990274266d6e38752a14ade4d48818f285dff9348314344c7'
-        '8efa7edb9abe7b66a2a9482702e80cbebbcf390f8442daf280f9fd0e05610a831ab54fdedbf4bbe58662f4fdef4b5e7a15547883aaee006c35915a453dafb343')
+license=('GPL-3.0-or-later WITH GPL-3.0-interface-exception')
+noextract=("$pkgname-$pkgver.tar.gz")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/${pkgname//-eap}/${pkgname//-eap}/releases/download/$pkgver/MCreator.EAP.$pkgver.Linux.64bit.tar.gz"
+        "${pkgname//-eap}.desktop")
+b2sums=('0d50cd52bd2f4eb430d247a9629c334617d054f7bff19d120d3d1bb7a61369a5ae96f1a1443531fe2c28c736e8985707c8a1a8648964d6494069514711aca27c'
+        'c4227c9cb09a4c0db1fd368f4815d890da16b3bf08552d5bf3766f5ad9706444e5ed42cd591422ddd326e295faa6c302d2144f2c6963598df6cca14537d13248')
 
 prepare() {
-    mkdir -p "$_pkgname-$pkgver"
-    bsdtar -xpf "$_pkgname-$pkgver.tar.gz" --strip-components=1 -C "$_pkgname-$pkgver"
+    PKGBUILD_JAVA='/usr/lib/jvm/$(archlinux-java status | awk '\''/java-17/{print $NF}'\'')/bin/java'
+
+    mkdir -p "$pkgname-$pkgver/"
+    bsdtar -xpf "$pkgname-$pkgver.tar.gz" --strip-components=1 -C "$pkgname-$pkgver/"
+
+    # Convert
+    cd "$pkgname-$pkgver/"
+
+    cat >"mcreator.sh"<<EOF
+#!/usr/bin/env bash
+export CLASSPATH="./$pkgname/lib/mcreator.jar:./lib/*"
+
+cd /opt/$pkgname/
+$PKGBUILD_JAVA --add-opens=java.base/java.lang=ALL-UNNAMED net.mcreator.Launcher "\$1"
+EOF
+
+    cp "$srcdir/${pkgname//-eap}.desktop" "${pkgname//-eap}.desktop"
+
+    rm -rf jdk/
 }
 
 package() {
-    rm -r "$srcdir/$_pkgname-$pkgver/"{jdk/,license/OpenJDK*.txt}
+    depends=('bash'
+             'glibc'
+             'hicolor-icon-theme'
+             'java-runtime=17')
 
-    cat >"$srcdir/$_pkgname-$pkgver/mcreator.sh"<<EOF
-#!/usr/bin/env bash
-export CLASSPATH="./mcreator/lib/mcreator.jar:./lib/*"
+    install -d "$pkgdir/opt/$pkgname/"
+    cp -a "$pkgname-$pkgver/." "$pkgdir/opt/$pkgname/"
 
-cd /opt/mcreator/
-/usr/lib/jvm/java-17-openjdk/bin/java --add-opens=java.base/java.lang=ALL-UNNAMED net.mcreator.Launcher "\$1"
-EOF
+    chmod 755 "$pkgdir/opt/$pkgname/${pkgname//-eap}.sh"
 
-    install -d "$pkgdir/opt/$_pkgname"
-    cp -r "$srcdir/$_pkgname-$pkgver/"* "$pkgdir/opt/$_pkgname"
+    install -d "$pkgdir/usr/bin/"
+    ln -s "/opt/$pkgname/${pkgname//-eap}.sh" "$pkgdir/usr/bin/$pkgname"
 
-    install -Dm644 "$srcdir/$_pkgname.desktop" "$pkgdir/usr/share/applications/$_pkgname.desktop"
-    install -Dm644 "$srcdir/$_pkgname-$pkgver/LICENSE.txt" "$pkgdir/usr/share/licenses/$_pkgname/LICENSE"
+    install -d "$pkgdir/usr/share/applications/"
+    ln -s "/opt/$pkgname/${pkgname//-eap}.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
+
+    install -d "$pkgdir/usr/share/icons/hicolor/64x64/apps/"
+    ln -s "/opt/$pkgname/icon.png" "$pkgdir/usr/share/icons/hicolor/64x64/apps/$pkgname.png"
+
+    install -Dm644 "$pkgname-$pkgver/LICENSE.txt" -t "$pkgdir/usr/share/licenses/$pkgname/"
 }
