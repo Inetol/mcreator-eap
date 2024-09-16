@@ -2,7 +2,7 @@
 
 pkgname=mcreator-eap
 _pkgvermajor=2024.3
-_pkgverbuild=34715
+_pkgverbuild=37517
 pkgver=$_pkgvermajor.$_pkgverbuild
 pkgrel=1
 pkgdesc='Make Minecraft Java Edition mods, Bedrock Edition Add-Ons, and data packs using visual graphical programming or integrated IDE (EAP release)'
@@ -12,11 +12,11 @@ license=('GPL-3.0-or-later')
 noextract=("$pkgname-$pkgver.tar.gz")
 source=("$pkgname-$pkgver.tar.gz::https://github.com/${pkgname//-eap}/${pkgname//-eap}/releases/download/$pkgver/MCreator.EAP.$pkgver.Linux.64bit.tar.gz"
         "${pkgname//-eap}.desktop")
-b2sums=('3f012453a36bc7aa2dd66ecbda12a82ec3948d37620631455709558d658767b126c052e91d05b5cbca1167a51ac91d5b0e1e4521ffe140ab2f1712945a902484'
+b2sums=('51e91da4a7c2e7c2bc5e186f6582ab3d2c5a35aa1edc50c9aa99a2da2cb9ab2be295391eba4a0f3dd4cbdb7d507c7f0ec234396fd87db64c3b19cacd9d54f55e'
         'c4227c9cb09a4c0db1fd368f4815d890da16b3bf08552d5bf3766f5ad9706444e5ed42cd591422ddd326e295faa6c302d2144f2c6963598df6cca14537d13248')
 
 prepare() {
-    PKGBUILD_JAVA='/usr/lib/jvm/$(archlinux-java status | awk '\''/java-21/{print $NF}'\'')/bin/java'
+    PKGBUILD_JAVA_PATH='$(find /usr/lib/jvm/ -maxdepth 1 -name '\''*21*'\'' -type d -print -quit)/bin/java'
 
     mkdir -p "$pkgname-$pkgver/"
     bsdtar -xpf "$pkgname-$pkgver.tar.gz" --strip-components=1 -C "$pkgname-$pkgver/"
@@ -29,7 +29,7 @@ prepare() {
 export CLASSPATH="./$pkgname/lib/mcreator.jar:./lib/*"
 
 cd /opt/$pkgname/
-$PKGBUILD_JAVA --add-opens=java.base/java.lang=ALL-UNNAMED net.mcreator.Launcher "\$1"
+$PKGBUILD_JAVA_PATH --add-opens=java.base/java.lang=ALL-UNNAMED net.mcreator.Launcher "\$1"
 EOF
 
     cp "$srcdir/${pkgname//-eap}.desktop" "${pkgname//-eap}.desktop"
