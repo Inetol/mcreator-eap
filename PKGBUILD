@@ -4,7 +4,7 @@ pkgname=mcreator-eap
 _pkgvermajor=2024.3
 _pkgverbuild=39215
 pkgver=$_pkgvermajor.$_pkgverbuild
-pkgrel=1
+pkgrel=2
 pkgdesc='Make Minecraft Java Edition mods, Bedrock Edition Add-Ons, and data packs using visual graphical programming or integrated IDE (EAP release)'
 arch=('x86_64')
 url='https://mcreator.net'
@@ -54,6 +54,4 @@ package() {
 
     install -d "$pkgdir/usr/share/icons/"
     ln -s "/opt/$pkgname/icon.png" "$pkgdir/usr/share/icons/$pkgname.png"
-
-    install -Dm644 "$pkgname-$pkgver/LICENSE.txt" -t "$pkgdir/usr/share/licenses/$pkgname/"
 }

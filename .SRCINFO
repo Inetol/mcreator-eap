@@ -1,7 +1,7 @@
 pkgbase = mcreator-eap
 	pkgdesc = Make Minecraft Java Edition mods, Bedrock Edition Add-Ons, and data packs using visual graphical programming or integrated IDE (EAP release)
 	pkgver = 2024.3.39215
-	pkgrel = 1
+	pkgrel = 2
 	url = https://mcreator.net
 	arch = x86_64
 	license = GPL-3.0-or-later
