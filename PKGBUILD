@@ -1,8 +1,8 @@
 # Maintainer: Ivan Gabaldon <aur[at]inetol.net>
 
 pkgname=mcreator-eap
-_pkgvermajor=2024.4
-_pkgverbuild=50117
+_pkgvermajor=2025.1
+_pkgverbuild=05718
 pkgver=$_pkgvermajor.$_pkgverbuild
 pkgrel=1
 pkgdesc='Make Minecraft Java Edition mods, Bedrock Edition Add-Ons, and data packs using visual graphical programming or integrated IDE (EAP release)'
@@ -12,8 +12,8 @@ license=('GPL-3.0-or-later')
 noextract=("$pkgname-$pkgver.tar.gz")
 source=("$pkgname-$pkgver.tar.gz::https://github.com/${pkgname//-eap}/${pkgname//-eap}/releases/download/$pkgver/MCreator.EAP.$pkgver.Linux.64bit.tar.gz"
         "${pkgname//-eap}.desktop")
-b2sums=('1717e15ca6d01111bfd6816eaf22026aa691f252720d396ba182658fb248e24683b810c46a651d80d50f48af365662c3600fb6c170a471d278d914d17acf4300'
-        'c4227c9cb09a4c0db1fd368f4815d890da16b3bf08552d5bf3766f5ad9706444e5ed42cd591422ddd326e295faa6c302d2144f2c6963598df6cca14537d13248')
+b2sums=('df7cb2e3f718e1bbc81bd24490e730f34a62ce7d186c389b17e3bc845f14ccc6d60b80f77dc7309fbd47d38e248ae750ea3699226373f1f7059348d4eb6d2d38'
+        '9743b439ba5916beb7784528d9128780d130578e6025abf6bcd637907c613b21d9b891ac11ce67b3cbad2e29289561ad24813dc6acef65290be4e7ab1a22ad47')
 
 prepare() {
     mkdir -p "$pkgname-$pkgver/"
